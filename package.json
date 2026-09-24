@@ -1,0 +1,29 @@
+{
+  "name": "backend-api-gcp",
+  "version": "1.0.0",
+  "description": "API REST (CRUD de usuarios) com upload de imagens para Google Cloud Storage - Sistemas Distribuidos GCP",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [
+    "express",
+    "mysql",
+    "gcp",
+    "cloud-storage",
+    "sistemas-distribuidos"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/storage": "^7.15.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
