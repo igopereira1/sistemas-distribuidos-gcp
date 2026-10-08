@@ -30,6 +30,7 @@ credentials.json
 # Terraform (Infraestrutura como Código)
 # ==========================================
 .terraform/
+.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
 crash.log
@@ -40,6 +41,9 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Documentação local / Notion
+docs/
 
 # ==========================================
 # Sistema Operacional e Editores

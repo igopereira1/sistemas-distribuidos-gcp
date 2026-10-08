@@ -17,8 +17,26 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Configurar Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar Dependências e Executar Migração do Banco (db:init)
+        env:
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          SECRET_NAME: ${{ secrets.SECRET_NAME || 'app-distribuida-gcp-db-credentials' }}
+        run: |
+          echo "Buscando credenciais do banco no Secret Manager..."
+          SECRET_JSON=$(gcloud secrets versions access latest --secret="$SECRET_NAME" --project="$PROJECT_ID")
+          export DB_HOST=$(echo "$SECRET_JSON" | jq -r .host)
+          export DB_USER=$(echo "$SECRET_JSON" | jq -r .username)
+          export DB_PASSWORD=$(echo "$SECRET_JSON" | jq -r .password)
+          export DB_NAME=$(echo "$SECRET_JSON" | jq -r .database)
+
+          npm ci
+          npm run db:init
 
       - name: Autenticar Docker no Artifact Registry
         run: |
