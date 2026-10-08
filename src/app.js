@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
+const usuariosRoutes = require('./routes/usuarios.routes');
+
 const app = express();
 
 // Middlewares essenciais
@@ -22,6 +24,11 @@ app.get('/api/health', (req, res) => {
     uptime: process.uptime(),
   });
 });
+
+// =========================================================================
+// Rotas da Aplicação
+// =========================================================================
+app.use('/usuarios', usuariosRoutes);
 
 // Middleware de tratamento global de erros
 app.use((err, req, res, next) => {
