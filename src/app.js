@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 
 const usuariosRoutes = require('./routes/usuarios.routes');
+const uploadRoutes = require('./routes/upload.routes');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.get('/api/health', (req, res) => {
 // Rotas da Aplicação
 // =========================================================================
 app.use('/usuarios', usuariosRoutes);
+app.use('/upload', uploadRoutes);
 
 // Middleware de tratamento global de erros
 app.use((err, req, res, next) => {
