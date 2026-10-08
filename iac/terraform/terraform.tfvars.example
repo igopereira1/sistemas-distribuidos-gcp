@@ -1,0 +1,11 @@
+# =========================================================================
+# Exemplo de variáveis para preenchimento no Terraform
+# Copie este arquivo para terraform.tfvars e ajuste com o seu Project ID do GCP:
+#   cp terraform.tfvars.example terraform.tfvars
+# =========================================================================
+
+project_id       = "ybytu-dev"
+region           = "us-central1"
+zone             = "us-central1-a"
+environment_name = "app-distribuida-gcp"
+network_cidr     = "10.0.1.0/24"
