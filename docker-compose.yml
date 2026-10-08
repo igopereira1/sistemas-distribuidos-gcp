@@ -1,0 +1,44 @@
+services:
+  # ==========================================
+  # 1. Banco de Dados Relacional (MySQL)
+  # ==========================================
+  db:
+    image: mysql:8.0
+    container_name: mysql-local
+    restart: always
+    environment:
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: sua_senha
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Executa o schema.sql automaticamente no primeiro boot do MySQL
+      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  # ==========================================
+  # 2. Servico da API Backend (Node.js)
+  # ==========================================
+  api:
+    build: .
+    container_name: api-backend-local
+    restart: always
+    ports:
+      - "3306:3306"
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_USER: admin
+      DB_PASSWORD: sua_senha
+      DB_NAME: app_db
+      DB_PORT: 3306
+      GCP_PROJECT_ID: ${GCP_PROJECT_ID:-seu-projeto-gcp}
+      GCS_BUCKET_NAME: ${GCS_BUCKET_NAME:-seu-bucket-imagens-gcp}
+
+volumes:
+  db_data:
