@@ -25,5 +25,6 @@ resource "google_secret_manager_secret_version" "db_credentials_version" {
     username = "admin"
     password = random_password.db_password.result
     database = "app_db"
+    host     = google_sql_database_instance.mysql.public_ip_address
   })
 }
