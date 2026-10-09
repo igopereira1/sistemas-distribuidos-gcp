@@ -17,10 +17,13 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+      - name: Configurar Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'npm'
 
       - name: Instalar Dependências e Executar Migração do Banco (db:init)
@@ -59,13 +62,14 @@ jobs:
           docker push "$IMAGE_URI:$IMAGE_TAG"
           docker push "$IMAGE_URI:latest"
 
-      - name: Deploy no Managed Instance Group (Rolling Restart sem Downtime)
+      - name: Deploy no Managed Instance Group (Rolling Replace sem Downtime)
         env:
           REGION: ${{ secrets.GCP_REGION || 'us-central1' }}
           MIG_NAME: ${{ secrets.MIG_NAME || 'app-distribuida-gcp-mig' }}
         run: |
-          echo "Reiniciando gradualmente as instancias do MIG: $MIG_NAME..."
-          # O comando 'restart' reinicia as VMs uma a uma de forma rolante,
-          # fazendo com que baixem a nova imagem com a tag :latest sem interromper o serviço.
-          gcloud compute instance-groups managed restart "$MIG_NAME" \
-            --region="$REGION"
+          echo "Atualizando gradualmente as instancias do MIG: $MIG_NAME..."
+          # O comando 'rolling-action replace' recria as VMs de forma rolante,
+          # garantindo que o novo container seja executado do zero sem interromper o serviço.
+          gcloud compute instance-groups managed rolling-action replace "$MIG_NAME" \
+            --region="$REGION" \
+            --max-unavailable=0

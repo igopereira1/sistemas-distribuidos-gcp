@@ -60,6 +60,8 @@ resource "google_compute_instance_template" "api_template" {
     docker pull $IMAGE_URI || true
 
     # 4. Inicia o container da API injetando as credenciais e o bucket GCS
+    docker rm -f backend-api 2>/dev/null || true
+
     docker run -d \
       --name backend-api \
       --restart always \
@@ -114,6 +116,14 @@ resource "google_compute_region_instance_group_manager" "api_mig" {
     health_check      = google_compute_health_check.mig_health_check.id
     initial_delay_sec = 180 # Tempo para instalacao do Docker e subida do container
   }
+
+  update_policy {
+    type                  = "PROACTIVE"
+    minimal_action        = "REPLACE"
+    max_surge_fixed       = 3
+    max_unavailable_fixed = 0
+    replacement_method    = "SUBSTITUTE"
+  }
 }
 
 # 4. Autoscaler Regional (Elasticidade de 2 a 5 instâncias)
@@ -125,7 +135,7 @@ resource "google_compute_region_autoscaler" "api_autoscaler" {
   autoscaling_policy {
     min_replicas    = 2 # Redundancia minima (Principio de Sistemas Distribuidos)
     max_replicas    = 5 # Limite maximo de escala
-    cooldown_period = 60
+    cooldown_period = 180
 
     cpu_utilization {
       target = 0.6 # Dispara nova instancia se o consumo de CPU superar 60%
