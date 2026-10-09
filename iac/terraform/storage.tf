@@ -16,7 +16,7 @@ resource "google_storage_bucket" "images_bucket" {
 
   cors {
     origin          = ["*"]
-    method          = ["GET", "HEAD", "PUT", "POST"]
+    method          = ["GET", "HEAD"]
     response_header = ["*"]
     max_age_seconds = 3600
   }
@@ -39,4 +39,21 @@ resource "google_artifact_registry_repository" "docker_repo" {
   format        = "DOCKER"
   location      = var.region
   description   = "Repositorio de imagens Docker da API Backend"
+
+  cleanup_policies {
+    id     = "delete-untagged"
+    action = "DELETE"
+    condition {
+      tag_state = "UNTAGGED"
+    }
+  }
+
+  cleanup_policies {
+    id     = "keep-recent-tagged"
+    action = "KEEP"
+    most_recent_versions {
+      keep_count = 5
+    }
+  }
 }
+
