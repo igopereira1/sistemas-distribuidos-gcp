@@ -113,6 +113,8 @@ Ao finalizar, o Terraform exibirá os `outputs`:
 - `artifact_registry_repo`: Repositório Docker criado para o push das imagens.
 - `storage_bucket_name`: Nome do bucket do Cloud Storage.
 - `cloud_sql_ip`: Endereço IP do banco de dados MySQL.
+- `secret_manager_name`: Identificador do segredo criptografado das credenciais.
+- `github_actions_sa_email`: E-mail da Service Account criada pelo Terraform para a esteira de CI/CD.
 
 ---
 
@@ -125,8 +127,20 @@ A esteira em [`.github/workflows/deploy-backend-gcp.yml`](.github/workflows/depl
 3. Publica a imagem no **Google Artifact Registry**.
 4. Dispara um **Rolling Restart** no _Managed Instance Group (MIG)_, atualizando as instâncias sem nenhum downtime para os usuários.
 
-### Secrets necessários no GitHub:
+### Configuração dos Secrets no GitHub:
 
-- `GCP_PROJECT_ID`: ID do seu projeto no Google Cloud.
-- `GCP_SA_KEY`: Chave JSON de uma Service Account com papéis de acesso ao Artifact Registry e Compute Engine.
+A Service Account do CI/CD (`github-actions-sa`) e suas permissões de menor privilégio já são criadas automaticamente pelo Terraform em [`iac/terraform/iam.tf`](iac/terraform/iam.tf).
+
+Para configurar o pipeline, basta gerar a chave JSON da conta e adicionar nos Secrets do repositório:
+
+```bash
+# 1. Gerar a chave JSON da Service Account provisionada pelo Terraform
+gcloud iam service-accounts keys create ~/.config/github-actions-sa-key.json \
+  --iam-account="github-actions-sa@SEU_PROJECT_ID.iam.gserviceaccount.com"
+```
+
+Configure os seguintes Secrets em **Settings > Secrets and variables > Actions**:
+
+- `GCP_PROJECT_ID`: ID do seu projeto no Google Cloud (ex: `ybytu-dev`).
+- `GCP_SA_KEY`: Conteúdo completo do arquivo JSON gerado (`cat ~/.config/github-actions-sa-key.json`).
 - `GCP_REGION`: Região utilizada (ex: `us-central1`).

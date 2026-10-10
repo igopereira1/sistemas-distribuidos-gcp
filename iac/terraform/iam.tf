@@ -49,3 +49,29 @@ resource "google_project_iam_member" "metric_writer" {
   role    = "roles/monitoring.metricWriter"
   member  = "serviceAccount:${google_service_account.vm_service_account.email}"
 }
+
+# =========================================================================
+# Google Cloud IAM (Service Account para a Esteira de CI/CD do GitHub Actions)
+# =========================================================================
+
+# 1. Cria a Service Account para o GitHub Actions
+resource "google_service_account" "github_actions_sa" {
+  account_id   = "github-actions-sa"
+  display_name = "Service Account para o GitHub Actions CI/CD"
+  description  = "Identidade usada pelo GitHub Actions para build, migracao de banco, push de containers e deploy no MIG"
+}
+
+# 2. Atribui as permissoes necessarias para o pipeline (Principio do Menor Privilegio)
+resource "google_project_iam_member" "github_actions_roles" {
+  for_each = toset([
+    "roles/artifactregistry.writer",
+    "roles/compute.instanceAdmin.v1",
+    "roles/compute.loadBalancerAdmin",
+    "roles/iam.serviceAccountUser",
+    "roles/secretmanager.secretAccessor",
+  ])
+
+  project = var.project_id
+  role    = each.key
+  member  = "serviceAccount:${google_service_account.github_actions_sa.email}"
+}

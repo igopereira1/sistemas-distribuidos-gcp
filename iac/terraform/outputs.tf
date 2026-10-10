@@ -26,3 +26,8 @@ output "secret_manager_name" {
   description = "Nome do segredo com as credenciais do banco no Secret Manager"
   value       = google_secret_manager_secret.db_credentials.secret_id
 }
+
+output "github_actions_sa_email" {
+  description = "Email da Service Account configurada para a esteira de CI/CD do GitHub Actions"
+  value       = google_service_account.github_actions_sa.email
+}
