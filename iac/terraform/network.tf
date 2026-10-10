@@ -37,7 +37,7 @@ resource "google_compute_firewall" "allow_lb_health_checks" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "3000"]
+    ports    = ["80"]
   }
 
   source_ranges = [

@@ -12,25 +12,28 @@ resource "google_service_account" "vm_service_account" {
 
 # 2. Atribui permissoes granulares (Principio do Menor Privilegio)
 
-# Acesso de leitura para puxar imagens Docker do Artifact Registry
-resource "google_project_iam_member" "artifact_registry_reader" {
-  project = var.project_id
-  role    = "roles/artifactregistry.reader"
-  member  = "serviceAccount:${google_service_account.vm_service_account.email}"
+# Acesso de leitura para puxar imagens exclusivamente deste repositorio no Artifact Registry
+resource "google_artifact_registry_repository_iam_member" "artifact_registry_reader" {
+  project    = var.project_id
+  location   = var.region
+  repository = google_artifact_registry_repository.docker_repo.name
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${google_service_account.vm_service_account.email}"
 }
 
-# Acesso de leitura aos segredos do Secret Manager
-resource "google_project_iam_member" "secret_accessor" {
-  project = var.project_id
-  role    = "roles/secretmanager.secretAccessor"
-  member  = "serviceAccount:${google_service_account.vm_service_account.email}"
+# Acesso de leitura exclusivamente ao segredo das credenciais do banco no Secret Manager
+resource "google_secret_manager_secret_iam_member" "secret_accessor" {
+  project   = var.project_id
+  secret_id = google_secret_manager_secret.db_credentials.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.vm_service_account.email}"
 }
 
-# Acesso para gravar imagens no Cloud Storage
-resource "google_project_iam_member" "storage_admin" {
-  project = var.project_id
-  role    = "roles/storage.objectAdmin"
-  member  = "serviceAccount:${google_service_account.vm_service_account.email}"
+# Acesso para gravar imagens exclusivamente dentro do bucket de fotos deste projeto
+resource "google_storage_bucket_iam_member" "storage_admin" {
+  bucket = google_storage_bucket.images_bucket.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.vm_service_account.email}"
 }
 
 # Acesso para emitir logs no Cloud Logging

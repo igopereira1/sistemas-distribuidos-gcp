@@ -9,12 +9,6 @@ variable "region" {
   default     = "us-central1"
 }
 
-variable "zone" {
-  description = "Zona padrão para recursos zonais"
-  type        = string
-  default     = "us-central1-a"
-}
-
 variable "environment_name" {
   description = "Nome do ambiente para prefixar recursos"
   type        = string
