@@ -67,7 +67,7 @@ jobs:
           REGION: ${{ secrets.GCP_REGION || 'us-central1' }}
           MIG_NAME: ${{ secrets.MIG_NAME || 'app-distribuida-gcp-mig' }}
         run: |
-          echo "Atualizando gradualmente as instancias do MIG: $MIG_NAME..."
+          echo "Atualizando gradualmente as instâncias do MIG: $MIG_NAME..."
           # O comando 'rolling-action replace' recria as VMs de forma rolante,
           # garantindo que o novo container seja executado do zero sem interromper o serviço.
           gcloud compute instance-groups managed rolling-action replace "$MIG_NAME" \

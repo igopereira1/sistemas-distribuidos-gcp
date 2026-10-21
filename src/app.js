@@ -36,7 +36,7 @@ app.use('/upload', uploadRoutes);
 app.use((err, req, res, next) => {
   console.error('[ERRO GLOBAL]:', err);
   res.status(err.status || 400).json({
-    mensagem: err.message || 'Erro inesperado na requisicao',
+    mensagem: err.message || 'Erro inesperado na requisição',
   });
 });
 

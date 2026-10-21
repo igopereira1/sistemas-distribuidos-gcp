@@ -3,12 +3,12 @@
 # =========================================================================
 
 output "load_balancer_ip" {
-  description = "Endereco IP publico do Load Balancer para acessar a API"
+  description = "Endereço IP público do Load Balancer para acessar a API"
   value       = google_compute_global_address.lb_ip.address
 }
 
 output "artifact_registry_repo" {
-  description = "URI do repositorio no Artifact Registry para build e push das imagens Docker"
+  description = "URI do repositório no Artifact Registry para build e push das imagens Docker"
   value       = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.name}"
 }
 
@@ -18,7 +18,7 @@ output "storage_bucket_name" {
 }
 
 output "cloud_sql_ip" {
-  description = "Endereco IP publico da instancia Cloud SQL MySQL"
+  description = "Endereço IP público da instância Cloud SQL MySQL"
   value       = google_sql_database_instance.mysql.public_ip_address
 }
 
@@ -28,6 +28,6 @@ output "secret_manager_name" {
 }
 
 output "github_actions_sa_email" {
-  description = "Email da Service Account configurada para a esteira de CI/CD do GitHub Actions"
+  description = "E-mail da Service Account configurada para a esteira de CI/CD do GitHub Actions"
   value       = google_service_account.github_actions_sa.email
 }

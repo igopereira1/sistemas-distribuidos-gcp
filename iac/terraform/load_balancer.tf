@@ -1,16 +1,15 @@
 # =========================================================================
 # Google Cloud Application Load Balancer (Balanceador de Carga HTTP Externo)
 # Equivalente ao Application Load Balancer (ALB) da AWS
-# [Referência Teórica: Tanenbaum - Transparência de Localização e Falha]
 # =========================================================================
 
-# 1. IP Estatico Global Publico reservado para o Load Balancer
+# 1. IP Estático Global Público reservado para o Load Balancer
 resource "google_compute_global_address" "lb_ip" {
   name        = "${var.environment_name}-lb-static-ip"
-  description = "Endereco IP estatico publico para acesso a API pelo mundo externo"
+  description = "Endereço IP estático público para acesso à API pelo mundo externo"
 }
 
-# 2. Health Check para o Load Balancer verificar o status das instancias no backend
+# 2. Health Check para o Load Balancer verificar o status das instâncias no backend
 resource "google_compute_health_check" "lb_health_check" {
   name                = "${var.environment_name}-lb-health-check"
   check_interval_sec  = 10
@@ -42,19 +41,19 @@ resource "google_compute_backend_service" "api_backend_service" {
   health_checks = [google_compute_health_check.lb_health_check.id]
 }
 
-# 4. URL Map: Define as regras de roteamento (envia todo o trafego para o Backend Service)
+# 4. URL Map: Define as regras de roteamento (envia todo o tráfego para o Backend Service)
 resource "google_compute_url_map" "url_map" {
   name            = "${var.environment_name}-url-map"
   default_service = google_compute_backend_service.api_backend_service.id
 }
 
-# 5. Target HTTP Proxy: Direciona as requisicoes da porta 80 para o URL Map
+# 5. Target HTTP Proxy: Direciona as requisições da porta 80 para o URL Map
 resource "google_compute_target_http_proxy" "http_proxy" {
   name    = "${var.environment_name}-target-http-proxy"
   url_map = google_compute_url_map.url_map.id
 }
 
-# 6. Global Forwarding Rule: A porta de entrada publica do Load Balancer
+# 6. Global Forwarding Rule: A porta de entrada pública do Load Balancer
 resource "google_compute_global_forwarding_rule" "forwarding_rule" {
   name                  = "${var.environment_name}-forwarding-rule"
   ip_protocol           = "TCP"

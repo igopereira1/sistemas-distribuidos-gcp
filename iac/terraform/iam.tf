@@ -7,12 +7,12 @@
 resource "google_service_account" "vm_service_account" {
   account_id   = "${var.environment_name}-vm-sa"
   display_name = "Service Account para as VMs da API Backend"
-  description  = "Identidade gerenciada para as VMs acessarem Artifact Registry, Secret Manager e Storage sem senhas no codigo"
+  description  = "Identidade gerenciada para as VMs acessarem Artifact Registry, Secret Manager e Storage sem senhas no código"
 }
 
-# 2. Atribui permissoes granulares (Principio do Menor Privilegio)
+# 2. Atribui permissões granulares (Princípio do Menor Privilégio)
 
-# Acesso de leitura para puxar imagens exclusivamente deste repositorio no Artifact Registry
+# Acesso de leitura para puxar imagens exclusivamente deste repositório no Artifact Registry
 resource "google_artifact_registry_repository_iam_member" "artifact_registry_reader" {
   project    = var.project_id
   location   = var.region
@@ -43,7 +43,7 @@ resource "google_project_iam_member" "log_writer" {
   member  = "serviceAccount:${google_service_account.vm_service_account.email}"
 }
 
-# Acesso para emitir metricas no Cloud Monitoring
+# Acesso para emitir métricas no Cloud Monitoring
 resource "google_project_iam_member" "metric_writer" {
   project = var.project_id
   role    = "roles/monitoring.metricWriter"
@@ -58,10 +58,10 @@ resource "google_project_iam_member" "metric_writer" {
 resource "google_service_account" "github_actions_sa" {
   account_id   = "github-actions-sa"
   display_name = "Service Account para o GitHub Actions CI/CD"
-  description  = "Identidade usada pelo GitHub Actions para build, migracao de banco, push de containers e deploy no MIG"
+  description  = "Identidade usada pelo GitHub Actions para build, migração de banco, push de contêineres e deploy no MIG"
 }
 
-# 2. Atribui as permissoes necessarias para o pipeline (Principio do Menor Privilegio)
+# 2. Atribui as permissões necessárias para o pipeline (Princípio do Menor Privilégio)
 resource "google_project_iam_member" "github_actions_roles" {
   for_each = toset([
     "roles/artifactregistry.writer",

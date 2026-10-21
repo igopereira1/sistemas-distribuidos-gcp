@@ -1,6 +1,6 @@
 # =========================================================================
 # Exemplo de variáveis para preenchimento no Terraform
-# Copie este arquivo para terraform.tfvars e ajuste com o seu Project ID do GCP:
+# Copiar este arquivo para terraform.tfvars e ajustar com o Project ID correspondente no GCP:
 #   cp terraform.tfvars.example terraform.tfvars
 # =========================================================================
 

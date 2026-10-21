@@ -6,7 +6,7 @@
 resource "google_compute_network" "vpc" {
   name                    = "${var.environment_name}-vpc"
   auto_create_subnetworks = false
-  description             = "VPC customizada para o laboratório de Sistemas Distribuídos"
+  description             = "VPC customizada para a arquitetura de Sistemas Distribuídos"
 }
 
 # =========================================================================

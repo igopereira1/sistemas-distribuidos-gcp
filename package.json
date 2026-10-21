@@ -1,7 +1,7 @@
 {
   "name": "backend-api-gcp",
   "version": "1.0.0",
-  "description": "API REST (CRUD de usuarios) com upload de imagens para Google Cloud Storage - Sistemas Distribuidos GCP",
+  "description": "API REST (CRUD de usuários) com upload de imagens para Google Cloud Storage - Sistemas Distribuídos GCP",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

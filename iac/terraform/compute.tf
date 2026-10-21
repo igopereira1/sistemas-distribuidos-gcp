@@ -1,13 +1,12 @@
 # =========================================================================
 # Google Compute Engine: Template de Instâncias e Auto Scaling (MIG)
 # Equivalente ao EC2 Launch Template e Auto Scaling Group (ASG) da AWS
-# [Referência Teórica: Tanenbaum - Tolerância a Falhas e Redundância de Hardware]
 # =========================================================================
 
 # 1. Template de Instâncias (Launch Template)
 resource "google_compute_instance_template" "api_template" {
   name_prefix  = "${var.environment_name}-template-"
-  machine_type = "e2-micro" # Tipo economico de VM para testes e estudos
+  machine_type = "e2-micro" # Tipo econômico de VM para testes e estudos
   region       = var.region
 
   tags = ["backend-instance"]
@@ -25,7 +24,7 @@ resource "google_compute_instance_template" "api_template" {
     subnetwork = google_compute_subnetwork.subnet.id
 
     access_config {
-      # Atribui IP publico efemero para permitir saida a internet e download de pacotes
+      # Atribui IP público efêmero para permitir saída à internet e download de pacotes
     }
   }
 
@@ -39,24 +38,24 @@ resource "google_compute_instance_template" "api_template" {
     #!/bin/bash
     set -e
 
-    # 1. Update do SO e instalacao do Docker e utilitarios
+    # 1. Update do SO e instalação do Docker e utilitários
     apt-get update -y
     apt-get install -y docker.io jq curl
     systemctl enable docker
     systemctl start docker
 
-    # 2. Leitura dinamica dos segredos no Secret Manager via gcloud CLI
+    # 2. Leitura dinâmica dos segredos no Secret Manager via gcloud CLI
     SECRET_JSON=$(gcloud secrets versions access latest --secret="${google_secret_manager_secret.db_credentials.secret_id}" --project="${var.project_id}")
     DB_USER=$(echo "$SECRET_JSON" | jq -r .username)
     DB_PASS=$(echo "$SECRET_JSON" | jq -r .password)
     DB_NAME=$(echo "$SECRET_JSON" | jq -r .database)
     DB_HOST=$(echo "$SECRET_JSON" | jq -r .host)
 
-    # 3. Autenticacao no Artifact Registry e download da imagem Docker
+    # 3. Autenticação no Artifact Registry e download da imagem Docker
     gcloud auth configure-docker ${var.region}-docker.pkg.dev --quiet
     IMAGE_URI="${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.name}/backend-api:latest"
 
-    # Tenta baixar a imagem (se ja houver imagem publicada)
+    # Tenta baixar a imagem (se já houver imagem publicada)
     docker pull $IMAGE_URI || true
 
     # 4. Inicia o container da API injetando as credenciais e o bucket GCS
@@ -82,7 +81,7 @@ resource "google_compute_instance_template" "api_template" {
   }
 }
 
-# 2. Health Check para Autorrecuperacao (Autohealing) do MIG
+# 2. Health Check para Autorrecuperação (Autohealing) do MIG
 resource "google_compute_health_check" "mig_health_check" {
   name                = "${var.environment_name}-mig-health-check"
   check_interval_sec  = 10
@@ -97,7 +96,7 @@ resource "google_compute_health_check" "mig_health_check" {
 }
 
 # 3. Managed Instance Group (MIG Regional)
-# Distribui as VMs automaticamente entre as zonas da regiao para tolerancia a falhas
+# Distribui as VMs automaticamente entre as zonas da região para tolerância a falhas
 resource "google_compute_region_instance_group_manager" "api_mig" {
   name               = "${var.environment_name}-mig"
   base_instance_name = "${var.environment_name}-api"
@@ -114,7 +113,7 @@ resource "google_compute_region_instance_group_manager" "api_mig" {
 
   auto_healing_policies {
     health_check      = google_compute_health_check.mig_health_check.id
-    initial_delay_sec = 180 # Tempo para instalacao do Docker e subida do container
+    initial_delay_sec = 180 # Tempo para instalação do Docker e subida do contêiner
   }
 
   update_policy {
@@ -133,12 +132,12 @@ resource "google_compute_region_autoscaler" "api_autoscaler" {
   target = google_compute_region_instance_group_manager.api_mig.id
 
   autoscaling_policy {
-    min_replicas    = 2 # Redundancia minima (Principio de Sistemas Distribuidos)
-    max_replicas    = 5 # Limite maximo de escala
+    min_replicas    = 2 # Redundância mínima (Princípio de Sistemas Distribuídos)
+    max_replicas    = 5 # Limite máximo de escala
     cooldown_period = 180
 
     cpu_utilization {
-      target = 0.6 # Dispara nova instancia se o consumo de CPU superar 60%
+      target = 0.6 # Dispara nova instância se o consumo de CPU superar 60%
     }
   }
 }

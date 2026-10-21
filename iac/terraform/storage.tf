@@ -3,7 +3,7 @@
 # Equivalente ao Amazon S3 da AWS
 # =========================================================================
 
-# Gera um sufixo aleatorio para garantir nome unico global no Cloud Storage
+# Gera um sufixo aleatório para garantir nome único global no Cloud Storage
 resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
@@ -11,8 +11,8 @@ resource "random_id" "bucket_suffix" {
 resource "google_storage_bucket" "images_bucket" {
   name                        = "${var.environment_name}-imagens-${random_id.bucket_suffix.hex}"
   location                    = var.region
-  force_destroy               = true # Permite destruir o bucket em teardown de laboratorio mesmo com arquivos
-  uniform_bucket_level_access = true # Boa pratica recomendada pelo Google Cloud
+  force_destroy               = true # Permite destruir o bucket em encerramento do ambiente mesmo com arquivos
+  uniform_bucket_level_access = true # Boa prática recomendada pelo Google Cloud
 
   cors {
     origin          = ["*"]
@@ -22,8 +22,8 @@ resource "google_storage_bucket" "images_bucket" {
   }
 }
 
-# Permite que qualquer pessoa na internet visualize/baixe as fotos enviadas
-# (Equivalente a politica de acesso publico do S3)
+# Permite que qualquer usuário na internet visualize/baixe as fotos enviadas
+# (Equivalente à política de acesso público do S3)
 resource "google_storage_bucket_iam_member" "public_read" {
   bucket = google_storage_bucket.images_bucket.name
   role   = "roles/storage.objectViewer"
@@ -31,14 +31,14 @@ resource "google_storage_bucket_iam_member" "public_read" {
 }
 
 # =========================================================================
-# 2. Google Artifact Registry (Repositorio Docker)
+# 2. Google Artifact Registry (Repositório Docker)
 # Equivalente ao Amazon ECR da AWS
 # =========================================================================
 resource "google_artifact_registry_repository" "docker_repo" {
   repository_id = "backend-repo"
   format        = "DOCKER"
   location      = var.region
-  description   = "Repositorio de imagens Docker da API Backend"
+  description   = "Repositório de imagens Docker da API Backend"
 
   cleanup_policies {
     id     = "delete-untagged"
@@ -56,4 +56,3 @@ resource "google_artifact_registry_repository" "docker_repo" {
     }
   }
 }
-

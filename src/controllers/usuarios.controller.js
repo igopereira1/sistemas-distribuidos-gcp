@@ -22,7 +22,7 @@ async function buscarPorId(req, res) {
     const [rows] = await pool.query('SELECT * FROM usuarios WHERE id = ?', [id]);
 
     if (rows.length === 0) {
-      return res.status(404).json({ mensagem: 'Usuario nao encontrado' });
+      return res.status(404).json({ mensagem: 'Usuário não encontrado' });
     }
 
     res.json(rows[0]);
@@ -37,7 +37,7 @@ async function criar(req, res) {
     const { nome, email, foto_url } = req.body;
 
     if (!nome || !email) {
-      return res.status(400).json({ mensagem: 'Os campos nome e email sao obrigatorios' });
+      return res.status(400).json({ mensagem: 'Os campos nome e email são obrigatórios' });
     }
 
     const [result] = await pool.query(
@@ -51,7 +51,7 @@ async function criar(req, res) {
 
     // Trata violação de restrição UNIQUE no MySQL
     if (error.code === 'ER_DUP_ENTRY') {
-      return res.status(409).json({ mensagem: 'Ja existe um usuario com esse email' });
+      return res.status(409).json({ mensagem: 'Já existe um usuário com este e-mail' });
     }
 
     res.status(500).json({ mensagem: 'Erro interno no servidor', erro: error.message });
@@ -69,10 +69,10 @@ async function atualizar(req, res) {
     );
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ mensagem: 'Usuario nao encontrado' });
+      return res.status(404).json({ mensagem: 'Usuário não encontrado' });
     }
 
-    res.json({ mensagem: 'Usuario atualizado com sucesso' });
+    res.json({ mensagem: 'Usuário atualizado com sucesso' });
   } catch (error) {
     console.error('[ERRO DB - atualizar]:', error);
     res.status(500).json({ mensagem: 'Erro interno no servidor', erro: error.message });
@@ -85,7 +85,7 @@ async function remover(req, res) {
     const [result] = await pool.query('DELETE FROM usuarios WHERE id = ?', [id]);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ mensagem: 'Usuario nao encontrado' });
+      return res.status(404).json({ mensagem: 'Usuário não encontrado' });
     }
 
     res.status(204).send();

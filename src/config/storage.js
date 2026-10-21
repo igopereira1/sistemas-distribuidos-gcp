@@ -5,10 +5,10 @@ const { Storage } = require('@google-cloud/storage');
 // =========================================================================
 // O SDK do GCP utiliza "Application Default Credentials" (ADC):
 // - Na nuvem (Compute Engine / Cloud Run), ele autentica automaticamente
-//   através da Service Account vinculada a maquina, dispensando senhas ou
+//   através da Service Account vinculada à máquina, dispensando senhas ou
 //   chaves de acesso no código (Zero Secret Hardcoding).
 // - Localmente, se a variável GOOGLE_APPLICATION_CREDENTIALS estiver definida,
-//   ele usara a chave JSON apontada por ela.
+//   ele usará a chave JSON apontada por ela.
 const storage = new Storage({
   projectId: process.env.GCP_PROJECT_ID,
 });

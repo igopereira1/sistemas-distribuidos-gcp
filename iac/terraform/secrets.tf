@@ -3,7 +3,7 @@
 # Equivalente ao AWS Secrets Manager
 # =========================================================================
 
-# Gera senha forte e aleatoria para o banco MySQL
+# Gera senha forte e aleatória para o banco MySQL
 resource "random_password" "db_password" {
   length  = 16
   special = false
@@ -18,7 +18,7 @@ resource "google_secret_manager_secret" "db_credentials" {
   }
 }
 
-# Cria a versao do segredo com as credenciais em formato JSON
+# Cria a versão do segredo com as credenciais em formato JSON
 resource "google_secret_manager_secret_version" "db_credentials_version" {
   secret      = google_secret_manager_secret.db_credentials.id
   secret_data = jsonencode({
