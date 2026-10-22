@@ -3,6 +3,12 @@ name: Deploy Backend API (Google Cloud)
 on:
   push:
     branches: ["main"]
+    paths:
+      - 'src/**'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - 'package*.json'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
